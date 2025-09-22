@@ -1,7 +1,7 @@
 <?php
 
 use yii\helpers\Url;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
 use yii\helpers\Html;
 
 /** @var $model \yii\base\DynamicModel */

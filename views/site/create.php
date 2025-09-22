@@ -73,6 +73,18 @@ $('#tgl-kunjungan').on('change', function() {
         return;
     }
     
+    // validasi: jika pilih hari ini, batasi jam sampai 09:00
+    var now = new Date();
+    if (selectedDate.getTime() === today.getTime()) {
+        var batas = new Date();
+        batas.setHours(9,0,0,0); // jam 09:00 hari ini
+        if (now > batas) {
+            alert('Pendaftaran Online untuk hari ini sudah ditutup (batas jam 09:00).');
+            $('#tgl-kunjungan').val('');
+            return;
+        }
+    }
+    
     $.getJSON('$jadwalUrl', {tgl: tgl}, function(res) {
         var dropdown = $('#id-jadwal');
         dropdown.empty().append('<option value="">Pilih Jadwal</option>');

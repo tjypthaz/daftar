@@ -59,7 +59,7 @@ $('#tgl-kunjungan').on('change', function() {
 
     // Batas maksimal = hari ini + 30 hari
     var maxDate = new Date();
-    maxDate.setDate(today.getDate() + 30);
+    maxDate.setDate(today.getDate() + 31);
 
     if (selectedDate < today) {
         alert('Tanggal tidak boleh kurang dari hari ini.');

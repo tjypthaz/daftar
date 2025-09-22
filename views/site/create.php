@@ -55,7 +55,7 @@ $('#tgl-kunjungan').on('change', function() {
     
     var today = new Date();
     today.setHours(0,0,0,0); // reset jam ke 00:00:00
-    var selectedDate = new Date(tgl);
+    var selectedDate = new Date(tgl + "T00:00:00"); // pastikan tidak ambigu timezone
 
     // Batas maksimal = hari ini + 30 hari
     var maxDate = new Date();
@@ -79,7 +79,7 @@ $('#tgl-kunjungan').on('change', function() {
         var batas = new Date();
         batas.setHours(9,0,0,0); // jam 09:00 hari ini
         if (now > batas) {
-            alert('Pendaftaran Online untuk hari ini sudah ditutup (batas jam 09:00).');
+            alert('Pendaftaran Online untuk hari ini sudah ditutup (maksimal jam 09:00). Silakan pilih tanggal lain');
             $('#tgl-kunjungan').val('');
             return;
         }

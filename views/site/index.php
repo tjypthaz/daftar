@@ -53,6 +53,13 @@ $this->title = 'Daftar Online';
                                     ],
                                 ]) ?>
                             </div>
+                            <div class="container">
+                                <p class="card-text text-center">
+                                    <strong>Catatan : </strong>Apabila Anda sudah sampai Rumah Sakit,
+                                    silakan tekan tombol hijau "Scan" untuk menampilkan Barcode,
+                                    kemudian arahkan ke mesin APM
+                                </p>
+                            </div>
                             <?php
                         }
                         ?>

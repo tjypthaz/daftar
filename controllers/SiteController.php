@@ -137,7 +137,7 @@ class SiteController extends Controller
 
         // tampilkan langsung di halaman sebagai <img>
         echo '<img src="' . $qrCode->writeDataUri() . '"> <br>';
-        echo "<h1>".$kodeBooking."</h1>";
+        echo "<h1>Pastikan Tingkat Kecerahan HP Anda Maksimal, Agar Mudah diBaca</h1>";
         exit;
     }
 

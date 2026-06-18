@@ -6,7 +6,7 @@ use yii\helpers\Html;
 
 /** @var $model \yii\base\DynamicModel */
 
-$this->title = 'Buat Daftar Online';
+$this->title = 'Daftar Online Pasien UMUM';
 ?>
 
 <h1><?= Html::encode($this->title) ?></h1>
@@ -14,13 +14,6 @@ $this->title = 'Buat Daftar Online';
 <div class="reservasi-form">
 
     <?php $form = ActiveForm::begin(); ?>
-
-    <?= $form->field($model, 'caraBayar')->dropDownList([
-        '1' => 'Umum',
-        '4' => 'Jasa Raharja',
-        '8' => 'JAMKESDA',
-        '15' => 'Jaminan Ketenagakerjaan',
-    ], ['prompt' => 'Pilih Cara Bayar'])->label('Cara Bayar / Jaminan') ?>
 
     <?= $form->field($model, 'noWA')->textInput(['maxlength' => true,'placeholder' => 'nomor whatsapp aktif'])
     ->label('Nomor Whatsapp')?>

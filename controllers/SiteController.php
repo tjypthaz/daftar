@@ -48,12 +48,165 @@ class SiteController extends Controller
         ];
     }
 
+    public function actionIndex()
+    {
+        $token = Yii::$app->session->get('authToken');
+        if (!$token) {
+            // kalau belum login, arahkan ke login
+            return $this->redirect(['site/login']);
+        }
+
+        return $this->render('index',[
+
+        ]);
+    }
+
+    public function actionHasilRadiologi()
+    {
+        $token = Yii::$app->session->get('authToken');
+        if (!$token) {
+            // kalau belum login, arahkan ke login
+            return $this->redirect(['site/login']);
+        }
+
+        $dataHasilRadiologi = [];
+        $client = new Client(['baseUrl' => Yii::$app->params['pointo']]); // URL API Anda
+        $response = $client->get('hasil-radiologi/list-pemeriksaan', null, [
+            'Authorization' => 'Bearer ' . $token,
+        ])->send();
+
+        if($response->isOk){
+            if ($response->data['code'] == '200'){
+                $dataHasilRadiologi = $response->data['data'];
+            }else{
+                Yii::$app->session->setFlash('error',$response->data['message']);
+            }
+        }else{
+            Yii::$app->session->setFlash('error',$response->data['message']);
+            return $this->goHome();
+        }
+
+        return $this->render('hasil-radiologi',[
+            'dataHasilRadiologi' => $dataHasilRadiologi
+        ]);
+    }
+
+    public function actionExpertise($acsn)
+    {
+        $token = Yii::$app->session->get('authToken');
+        if (!$token) {
+            // kalau belum login, arahkan ke login
+            return $this->redirect(['site/login']);
+        }
+
+        $client = new Client(['baseUrl' => Yii::$app->params['pointo']]); // URL API Anda
+        $response = $client->get('hasil-radiologi/view-bacaan?acsn='.$acsn, null, [
+            'Authorization' => 'Bearer ' . $token,
+        ])->send();
+        /*echo "<pre>";
+        print_r($response->data);
+        exit;*/
+
+        if($response->isOk){
+            if ($response->data['code'] == '200'){
+                $file = $response->data['data']['file'];
+                $filename = $response->data['data']['filename'];
+                $key = hex2bin($response->data['data']['key']);
+
+                $decoded = base64_decode($file);
+                $iv = mb_substr($decoded, 0, openssl_cipher_iv_length("aes-256-cbc"), "8bit");
+                $encrypted = mb_substr($decoded, openssl_cipher_iv_length("aes-256-cbc"), null, "8bit");
+                $decrypted = openssl_decrypt($encrypted, "aes-256-cbc", $key, OPENSSL_RAW_DATA, $iv);
+                $decrypted = base64_decode($decrypted);
+
+                Yii::$app->response->format = \yii\web\Response::FORMAT_RAW;
+
+                // Stream langsung ke browser sebagai PDF
+                Yii::$app->response->headers->removeAll();
+                Yii::$app->response->headers->set('Content-Type', 'application/pdf');
+                Yii::$app->response->headers->set('Content-Disposition', 'inline; filename="' . $filename . '"');
+                Yii::$app->response->headers->set('Content-Length', strlen($decrypted));
+                Yii::$app->response->headers->set('Cache-Control', 'private, max-age=0, must-revalidate');
+
+                return $decrypted;
+
+            }else{
+                Yii::$app->session->setFlash('error',$response->data['message']);
+            }
+        }else{
+            Yii::$app->session->setFlash('error',$response->data['message']);
+        }
+
+        return $this->goHome();
+    }
+
+    public function actionRadiologiOri($acsn)
+    {
+        $token = Yii::$app->session->get('authToken');
+        if (!$token) {
+            // kalau belum login, arahkan ke login
+            return $this->redirect(['site/login']);
+        }
+
+        $client = new Client(['baseUrl' => Yii::$app->params['pointo']]); // URL API Anda
+        $response = $client->get('hasil-radiologi/view-gambar-ori?acsn='.$acsn, null, [
+            'Authorization' => 'Bearer ' . $token,
+        ])->send();
+
+        if($response->isOk){
+            if ($response->data['code'] == '200'){
+                ?>
+                <iframe
+                    src="<?= "http://194.169.47.92:3571/viewer?StudyInstanceUIDs=".$response->data['studyId'] ?>"
+                    style="
+                        width:100%;
+                        height:95vh;
+                        border:none;
+                    ">
+                </iframe>
+                <?php
+            }else{
+                throw new \yii\web\ServerErrorHttpException($response->data['message']);
+            }
+        }else{
+            throw new \yii\web\ServerErrorHttpException($response->data['message']);
+        }
+    }
+
+    public function actionRadiologiJpg($acsn)
+    {
+        $token = Yii::$app->session->get('authToken');
+        if (!$token) {
+            // kalau belum login, arahkan ke login
+            return $this->redirect(['site/login']);
+        }
+
+        $client = new Client(['baseUrl' => Yii::$app->params['pointo']]); // URL API Anda
+        $response = $client->get('hasil-radiologi/view-gambar-jpg?referenceId='.$acsn, null, [
+            'Authorization' => 'Bearer ' . $token,
+        ])->send();
+
+        if($response->isOk){
+            if ($response->data['code'] == '200'){
+                foreach ($response->data['data'] as $url){
+                    $newUrl = str_replace('localhost','10.212.1.39',$url['url']);
+                    echo \yii\bootstrap4\Html::img($newUrl).'<br><br>';
+                }
+                exit;
+            }else{
+                throw new \yii\web\ServerErrorHttpException($response->data['message']);
+            }
+        }else{
+            throw new \yii\web\ServerErrorHttpException($response->data['message']);
+        }
+    }
+
     /**
      * Displays homepage.
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionReservasi()
     {
         $token = Yii::$app->session->get('authToken');
         if (!$token) {
@@ -80,7 +233,7 @@ class SiteController extends Controller
             return $this->goHome();
         }
 
-        return $this->render('index',[
+        return $this->render('reservasi',[
             'dataReservasi' => $dataReservasi
         ]);
     }
@@ -161,7 +314,7 @@ class SiteController extends Controller
             Yii::$app->session->setFlash('error', 'Gagal. '.$response->data['message']);
         }
 
-        return $this->redirect(['index']);
+        return $this->redirect(['reservasi']);
 
     }
 
@@ -170,6 +323,7 @@ class SiteController extends Controller
         $model = new \yii\base\DynamicModel(['caraBayar', 'noWA', 'tglKunjungan', 'idJadwal']);
         $model->addRule(['caraBayar', 'noWA', 'tglKunjungan', 'idJadwal'], 'required');
         $model->addRule('noWA', 'match', ['pattern' => '/^[0-9]{10,15}$/', 'message' => 'No WA harus angka 10-15 digit']);
+        $model->caraBayar = '1';
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $token = Yii::$app->session->get('authToken');
@@ -190,7 +344,7 @@ class SiteController extends Controller
 
             if ($response->isOk && $response->data['code'] == '200') {
                 Yii::$app->session->setFlash('success', $response->data['message']);
-                return $this->redirect(['index']);
+                return $this->redirect(['reservasi']);
             } else {
                 Yii::$app->session->setFlash('error', $response->data['message']);
             }

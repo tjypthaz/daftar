@@ -2,23 +2,33 @@
 
 /** @var yii\web\View $this */
 
-use yii\bootstrap4\Modal;
-use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use kartik\icons\Icon;
 
 $this->title = 'Dashboard';
 ?>
-<div class="row mb-1">
-    <div class="col text-center">
-        <?= Html::a(Icon::show('calendar-check').'<br>Daftar Online UMUM',[
-            Url::to('reservasi')
-        ],['class' => 'btn'])?>
+<div class="row">
+    <div class="col-md">
+        <?= Html::a(
+            '<div class="card text-white bg-primary mb-3">
+                <div class="card-body text-center">
+                    <h2>Daftar Online UMUM</h2>
+                </div>
+            </div>',
+            ['reservasi'],
+            ['style' => 'text-decoration:none']
+        ) ?>
     </div>
-    <div class="col text-center">
-        <?= Html::a(Icon::show('x-ray').'<br>Hasil Radiologi',[
-            Url::to('hasil-radiologi')
-        ],['class' => 'btn'])?>
+
+    <div class="col-md">
+        <?= Html::a(
+            '<div class="card text-white bg-success mb-3">
+                <div class="card-body text-center">
+                    <h2>Hasil Radiologi</h2>
+                </div>
+            </div>',
+            ['hasil-radiologi'],
+            ['style' => 'text-decoration:none']
+        ) ?>
     </div>
 </div>
